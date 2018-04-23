@@ -1,0 +1,11 @@
+Start entering commands:
+Robot: Rb5 at: 1,0
+Robot: Rb5 at: 3,3
+Robot: Rb5 at: 3,2
+Robot: Rb5 at: 3,1
+Robot: Rb5 at: 2,1
+Robot: Rb5 at: 2,0
+Robot: Rb5 at: -1,-1
+==========
+Rank Table:
+Robot: Rb5, rank: 0, dirt-tank: 0

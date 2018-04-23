@@ -1,0 +1,10 @@
+Place Rb5 1 0
+Place Rb5 3 3
+Move Rb5 L
+Move Rb5 L
+Move Rb5 U
+Move Rb5 L
+Move Rb5 L
+Move Rb5 L
+Move Rb5 L
+Move Rb5 L
