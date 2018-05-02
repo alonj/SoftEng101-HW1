@@ -5,6 +5,7 @@
 #include <sstream>
 #include "RobotDB.h"
 #include "Map.h"
+#include "Printer.h"
 
 //
 // Created by alonj on 18-Apr-18.
@@ -12,74 +13,51 @@
 using namespace std;
 
 void StartControl(){
-    RobotDB main_db;
+    Robot_Count = 0;
     string CommandInput;
     vector<string> CommandParse;
     std::cout << "Start entering commands:" << std::endl;
+    string CurrCommand;
+    string RobotID, Direction;
+    int x, y;
     while(!cin.eof()){
-        getline(cin, CommandInput);
-        string CurrentWord;
-        for(string::iterator sit=CommandInput.begin(); sit != CommandInput.end(); sit++){
-            if(*sit != ' '){
-                CurrentWord.push_back(*sit);
-            }
-            else{
-                CommandParse.push_back(CurrentWord);
-                CurrentWord.clear();
+        cin>>CurrCommand;
+        if(CurrCommand == "Move"){
+            cin >> RobotID;
+            cin >> Direction;
+            if(DB_robot_in_map(RobotID)) {
+                DB_Move(RobotID, Direction);
+                PrintRobotPlace(RobotID, x, y);
             }
         }
-        CommandParse.push_back(CurrentWord);
-    }
-    string CurrentCommand = *CommandParse.begin();
-    CommandParse.erase(CommandParse.begin());
-    if(CurrentCommand == "Move"){
-        vector<string>::iterator it = CommandParse.begin();
-        string RobotID = *it;
-        string Direction = *++it;
-        CommandParse.erase(CommandParse.begin(), it);
-        main_db.Move(RobotID, Direction);
-    }
-    else if (CurrentCommand == "AddDirt"){
-        vector<string>::iterator it = CommandParse.begin();
-        unsigned x, y;
-        stringstream ss;
-        ss << *it;
-        ss >> x;
-        ss << *++it;
-        ss >> y;
-        CommandParse.erase(CommandParse.begin(), it);
-        addDirt(x, y);
-    }
-    else if (CurrentCommand == "Clean"){
-        vector<string>::iterator it = CommandParse.begin();
-        string RobotID = *it;
-        CommandParse.erase(it);
-        main_db.Clean(RobotID);
-    }
-    else if (CurrentCommand == "Place"){
-        vector<string>::iterator it = CommandParse.begin();
-        string RobotID = *it;
-        int x, y;
-        stringstream ss;
-        ss << *++it;
-        ss >> x;
-        ss << *++it;
-        ss >> y;
-        CommandParse.erase(CommandParse.begin(), it);
-        main_db.Place(RobotID, x, y);
-    }
-    else if (CurrentCommand == "Delete"){
-        vector<string>::iterator it = CommandParse.begin();
-        string RobotID = *it;
-        CommandParse.erase(it);
-        main_db.Delete(RobotID);
-    }
-    else if (CurrentCommand == "MoveMulti"){
-        vector<string>::iterator it = CommandParse.begin();
-        string RobotID = *it;
-        while(*++it != "end"){
-            main_db.Move(RobotID, *it);
+        else if (CurrCommand == "AddDirt"){
+            cin >> x;
+            cin >> y;
+            if(!DB_exist_in_coord(x, y) && inMapLimit(x, y))
+                addDirt(x, y);
         }
-        CommandParse.erase(CommandParse.begin(), it);
+        else if (CurrCommand == "Clean"){
+            cin >> RobotID;
+            if(DB_robot_in_map(RobotID)) DB_Clean(RobotID);
+        }
+        else if (CurrCommand == "Place"){
+            cin >> RobotID;
+            cin >> x;
+            cin >> y;
+            bool success = DB_Place(RobotID, x, y);
+            if(success) PrintRobotPlace(RobotID, x, y);
+        }
+        else if (CurrCommand == "Delete"){
+            cin >> RobotID;
+            DB_Delete(RobotID);
+        }
+        else if (CurrCommand == "MoveMulti"){
+            string nextWord;
+            cin >> nextWord;
+            while(nextWord != "end"){
+                DB_Move(RobotID, nextWord);
+                cin >> nextWord;
+            }
+        }
     }
 }

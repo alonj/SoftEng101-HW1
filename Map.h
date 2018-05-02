@@ -22,4 +22,5 @@ void cleanDirt(const int x, const int y);
  */
 bool inMapLimit (int x, int y);
 
+int get_cell_status(int x, int y);
 #endif

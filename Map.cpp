@@ -43,3 +43,5 @@ bool inMapLimit (const int x, const int y)
 	else
 		return false;
 }
+
+int get_cell_status(int x, int y){return gmap[x][y];}

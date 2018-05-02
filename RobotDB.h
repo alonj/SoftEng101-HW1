@@ -5,23 +5,23 @@
 #ifndef HW1ATTACHEDCODEFILES_ROBOTDB_H
 #define HW1ATTACHEDCODEFILES_ROBOTDB_H
 
-#include "Robot.h"
 #include <vector>
+#include <string>
 
 using namespace std;
 
-class RobotDB{
-private:
-    vector<Robot> _database;
-    int _total_count;
-    Robot* get_robot_ptr(string RobotID);
-public:
-    RobotDB(){_total_count = 0;};
-    Robot* Place(string RobotID, int &pos_x, int &pos_y);
-    void Move(string RobotID, string Direction);
-    void Clean(string RobotID);
-    void Delete(string RobotID);
-};
+static vector<int> Score;
+static vector<int> Pos_x;
+static vector<int> Pos_y;
+static vector<int> Bin_Status;
+static vector<string> Robot_ID;
+static int Robot_Count;
 
+void DB_Move(string &RobotID, string &Direction);
+bool DB_Place(string &RobotID, int &pos_x, int &pos_y);
+void DB_Clean(string &RobotID);
+void DB_Delete(string &RobotID);
+bool DB_exist_in_coord(int &pos_x, int &pos_y);
+bool DB_robot_in_map(string &RobotID);
 
 #endif //HW1ATTACHEDCODEFILES_ROBOTDB_H
