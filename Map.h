@@ -12,6 +12,11 @@ using std::string;
  */
 void addDirt(const int x, const int y);
 
+/**
+ * Clean dirt in the specified coordinates (i.e change value of cell to 0)
+ * @param x : x coordinate
+ * @param y : y coordinate
+ */
 void cleanDirt(const int x, const int y);
 
 /**
@@ -22,5 +27,20 @@ void cleanDirt(const int x, const int y);
  */
 bool inMapLimit (int x, int y);
 
+
+/**
+ * Get clean/dirty status of cell in parameter coordinates.
+ * @param x: x coordinate
+ * @param y : y coordinate
+ * @return : 0 if the cell is clean, 1 if dirty.
+ */
 int get_cell_status(int x, int y);
+
+/**
+ * Print map status for debugging.
+ * for each cell:
+ * 0 if clean (c if also at least 1 robot on cell)
+ * 1 if dirty (d if also at least 1 robot on cell)
+ */
+void printMap();
 #endif

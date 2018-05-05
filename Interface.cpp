@@ -1,8 +1,7 @@
 #include "Interface.h"
-#include <iostream>
-#include <string>
 #include <vector>
 #include <sstream>
+#include <queue>
 #include "RobotDB.h"
 #include "Map.h"
 #include "Printer.h"
@@ -10,24 +9,26 @@
 //
 // Created by alonj on 18-Apr-18.
 //
+
+extern vector<string> Robot_ID;
+extern vector<int> Score;
+extern vector<int> Bin_Status;
+extern int Robot_Count;
+
 using namespace std;
 
-void StartControl(){
-    Robot_Count = 0;
-    string CommandInput;
-    vector<string> CommandParse;
-    std::cout << "Start entering commands:" << std::endl;
+void CommandRoutine(){
     string CurrCommand;
     string RobotID, Direction;
     int x, y;
+    cin >> CurrCommand;
     while(!cin.eof()){
-        cin>>CurrCommand;
         if(CurrCommand == "Move"){
             cin >> RobotID;
             cin >> Direction;
             if(DB_robot_in_map(RobotID)) {
                 DB_Move(RobotID, Direction);
-                PrintRobotPlace(RobotID, x, y);
+                PrintRobotPlace(RobotID, DB_get_robot_pos(RobotID,'x'), DB_get_robot_pos(RobotID,'y'));
             }
         }
         else if (CurrCommand == "AddDirt"){
@@ -38,7 +39,10 @@ void StartControl(){
         }
         else if (CurrCommand == "Clean"){
             cin >> RobotID;
-            if(DB_robot_in_map(RobotID)) DB_Clean(RobotID);
+            if(DB_robot_in_map(RobotID)) {
+                DB_Clean(RobotID);
+                PrintClean(RobotID, DB_get_robot_pos(RobotID,'x'), DB_get_robot_pos(RobotID,'y'));
+            }
         }
         else if (CurrCommand == "Place"){
             cin >> RobotID;
@@ -52,12 +56,34 @@ void StartControl(){
             DB_Delete(RobotID);
         }
         else if (CurrCommand == "MoveMulti"){
-            string nextWord;
-            cin >> nextWord;
-            while(nextWord != "end"){
-                DB_Move(RobotID, nextWord);
-                cin >> nextWord;
+            std::queue<int> printQueue;
+            string nextDirection;
+            cin >> RobotID;
+            cin >> nextDirection;
+            while(nextDirection != "end"){
+                if(DB_robot_in_map(RobotID)) {
+                    DB_Move(RobotID, nextDirection);
+                    printQueue.push(DB_get_robot_pos(RobotID, 'x'));
+                    printQueue.push(DB_get_robot_pos(RobotID, 'y'));
+                }
+                cin >> nextDirection;
+            }
+            while(!printQueue.empty()){
+                int a = printQueue.front();
+                printQueue.pop();
+                int b = printQueue.front();
+                printQueue.pop();
+                PrintRobotPlace(RobotID, a, b);
             }
         }
+        printMap();
+        cin >> CurrCommand;
     }
+}
+
+void StartControl(){
+    Robot_Count = 0;
+    cout << "Start entering commands:" << endl;
+    CommandRoutine();
+    PrintTable(Robot_ID, Score, Bin_Status);
 }

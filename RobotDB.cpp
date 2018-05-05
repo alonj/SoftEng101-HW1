@@ -4,6 +4,13 @@
 #include "Map.h"
 #include "RobotDB.h"
 
+vector<int> Score; // the ranks for each Robot
+vector<int> Pos_x; // Coordinate X for each robot
+vector<int> Pos_y; // Coordinate Y for each robot
+vector<int> Bin_Status; // Dirt bin status (0-5)
+vector<string> Robot_ID; // Robot names
+int Robot_Count; // total robot count
+
 
 int get_robot_ptr(string &RobotID){
     int place = -1;
@@ -15,6 +22,15 @@ int get_robot_ptr(string &RobotID){
     return place;
 }
 
+int DB_get_robot_pos(string &RobotID, char type){
+    int id = get_robot_ptr(RobotID);
+    if(type == 'x')
+        return Pos_x[id];
+    else if(type == 'y')
+        return Pos_y[id];
+    else return -1;
+
+}
 
 bool DB_robot_in_map(string &RobotID){
     int index = get_robot_ptr(RobotID);
@@ -52,6 +68,10 @@ void DB_Move(string &RobotID, string &Direction) {
         Pos_x[currentRobot] = new_x;
         Pos_y[currentRobot] = new_y;
     }
+    else{
+        Pos_x[currentRobot] = -1;
+        Pos_y[currentRobot] = -1;
+    }
 }
 
 void DB_Clean(string &RobotID) {
@@ -67,7 +87,7 @@ void DB_Clean(string &RobotID) {
     int curr_y = Pos_y[currentRobot];
     int current_cell_status = get_cell_status(curr_x, curr_y);
     cleanDirt(curr_x, curr_y);
-    if (current_cell_status != get_cell_status(curr_x, curr_y)) Score[currentRobot]++;
+    if (current_cell_status > get_cell_status(curr_x, curr_y)) Score[currentRobot]++;
 }
 
 void DB_Delete(string &RobotID) {
@@ -82,10 +102,8 @@ void DB_Delete(string &RobotID) {
 }
 
 bool DB_exist_in_coord(int &pos_x, int &pos_y){
-    for(vector<int>::size_type i = 0; i < Robot_Count; i++) {
-        if (Pos_y[i] == pos_y && Pos_x[i] == pos_x) {
+    for(vector<int>::size_type i = 0; i < Robot_Count; i++)
+        if (Pos_y[i] == pos_y && Pos_x[i] == pos_x)
             return true;
-        }
-    }
     return false;
 }
