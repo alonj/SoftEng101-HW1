@@ -20,7 +20,7 @@ void addDirt(const int x, const int y);
 void cleanDirt(const int x, const int y);
 
 /**
- * Check if x,y coordinates is valid. valid - if the coordinates in the map is in the map limits.
+ * Check if x,y coordinates are valid. valid - if the coordinates in the map is in the map limits.
  * @param x: x coordinate
  * @param y: y coordinate
  * @return: True if the if coordinates are valid, false otherwise.
@@ -34,7 +34,7 @@ bool inMapLimit (int x, int y);
  * @param y : y coordinate
  * @return : 0 if the cell is clean, 1 if dirty.
  */
-int get_cell_status(int x, int y);
+int getCellStatus(int x, int y);
 
 /**
  * Print map status for debugging.

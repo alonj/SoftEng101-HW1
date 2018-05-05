@@ -6,7 +6,11 @@
 #define S_HIGH (7) // define the numbers of rows
 #define S_WIDTH (7) // define the numbers of columns
 
-using std::string;
+/**
+ * Module enables actions and checks on the map itself.
+ */
+
+using namespace std;
 
 int gmap [S_HIGH][S_WIDTH] =
 {
@@ -32,32 +36,26 @@ void addDirt(const int x, const int y)
 void cleanDirt(const int x, const int y)
 {
     if (inMapLimit(x,y))
-    {
         gmap[x][y]=0;
-    }
-
 }
 
-//####################################################################################################
+//########################################################################################
 
 bool inMapLimit (const int x, const int y)
 {
-	if (x>=0 && x<S_HIGH && y>=0 && y<S_WIDTH)
-		return true;
-	else
-		return false;
+    return x >= 0 && x < S_HIGH && y >= 0 && y < S_WIDTH;
 }
 
-int get_cell_status(int x, int y){return gmap[x][y];}
+int getCellStatus(int x, int y){return gmap[x][y];}
 
 void printMap(){
-    std::cout<<"Current Map Status:"<<std::endl;
+    cout<<"Current Map Status:"<<endl;
     for(int i = 0; i < S_HIGH; i ++){
         for(int j = 0; j < S_WIDTH ; j++){
-            if(DB_exist_in_coord(i,j) && gmap[i][j] == 1) std::cout<<'d';
-            else if(DB_exist_in_coord(i,j)) std::cout<<'c';
-            else std::cout<<gmap[i][j];
+            if(dbExistInCoords(i, j) && gmap[i][j] == 1) cout<<'d';
+            else if(dbExistInCoords(i, j)) cout<<'c';
+            else cout<<gmap[i][j];
         }
-        std::cout<<std::endl;
+        cout<<endl;
     }
 }

@@ -1,6 +1,5 @@
 #include "Interface.h"
 #include <vector>
-#include <sstream>
 #include <queue>
 #include "RobotDB.h"
 #include "Map.h"
@@ -10,80 +9,96 @@
 // Created by alonj on 18-Apr-18.
 //
 
-extern vector<string> Robot_ID;
-extern vector<int> Score;
-extern vector<int> Bin_Status;
-extern int Robot_Count;
+/**
+ * Module interprets and classifies user input into appropriate robot methods in RobotDB.h
+ */
+
+extern vector<string> robotName;
+extern vector<int> robotScore;
+extern vector<int> robotBinStatus;
+extern int robotCount;
 
 using namespace std;
 
-void CommandRoutine(){
-    string CurrCommand;
-    string RobotID, Direction;
-    int x, y;
-    cin >> CurrCommand;
-    while(!cin.eof()){
-        if(CurrCommand == "Move"){
-            cin >> RobotID;
-            cin >> Direction;
-            if(DB_robot_in_map(RobotID)) {
-                DB_Move(RobotID, Direction);
-                PrintRobotPlace(RobotID, DB_get_robot_pos(RobotID,'x'), DB_get_robot_pos(RobotID,'y'));
+void CommandRoutine()
+{
+    string currentCommand;
+    string robotID, direction;
+    int coordX, coordY;
+    cin >> currentCommand;
+    while (!cin.eof())
+    {
+        if (currentCommand == "Move")
+        {
+            cin >> robotID;
+            cin >> direction;
+            if (dbRobotInMap(robotID)) // call Move method if robot is in valid coords.
+            {
+                dbMove(robotID, direction);
+                PrintRobotPlace(robotID, dbGetRobotPos(robotID, 'x'),
+                                dbGetRobotPos(robotID, 'y'));
             }
         }
-        else if (CurrCommand == "AddDirt"){
-            cin >> x;
-            cin >> y;
-            if(!DB_exist_in_coord(x, y) && inMapLimit(x, y))
-                addDirt(x, y);
+        else if (currentCommand == "AddDirt")
+        {
+            cin >> coordX;
+            cin >> coordY;
+            if (!dbExistInCoords(coordX, coordY) && inMapLimit(coordX, coordY))
+                addDirt(coordX, coordY); // if coordinates valid and no robot exists there, add dirt.
         }
-        else if (CurrCommand == "Clean"){
-            cin >> RobotID;
-            if(DB_robot_in_map(RobotID)) {
-                DB_Clean(RobotID);
-                PrintClean(RobotID, DB_get_robot_pos(RobotID,'x'), DB_get_robot_pos(RobotID,'y'));
+        else if (currentCommand == "Clean")
+        {
+            cin >> robotID;
+            if (dbRobotInMap(robotID))
+            {
+                dbClean(robotID); // clean coordinates of robot with name robotID.
+                PrintClean(robotID, dbGetRobotPos(robotID, 'x'),
+                           dbGetRobotPos(robotID, 'y'));
             }
         }
-        else if (CurrCommand == "Place"){
-            cin >> RobotID;
-            cin >> x;
-            cin >> y;
-            bool success = DB_Place(RobotID, x, y);
-            if(success) PrintRobotPlace(RobotID, x, y);
+        else if (currentCommand == "Place")
+        {
+            cin >> robotID;
+            cin >> coordX;
+            cin >> coordY;
+            bool placementSuccess = dbPlace(robotID, coordX, coordY); // place new robot.
+            if (placementSuccess)
+                PrintRobotPlace(robotID, coordX, coordY);
         }
-        else if (CurrCommand == "Delete"){
-            cin >> RobotID;
-            DB_Delete(RobotID);
+        else if (currentCommand == "Delete")
+        {
+            cin >> robotID;
+            dbDelete(robotID);
         }
-        else if (CurrCommand == "MoveMulti"){
-            std::queue<int> printQueue;
+        else if (currentCommand == "MoveMulti")
+        {
             string nextDirection;
-            cin >> RobotID;
+            vector<string> directionList;
+            cin >> robotID;
             cin >> nextDirection;
-            while(nextDirection != "end"){
-                if(DB_robot_in_map(RobotID)) {
-                    DB_Move(RobotID, nextDirection);
-                    printQueue.push(DB_get_robot_pos(RobotID, 'x'));
-                    printQueue.push(DB_get_robot_pos(RobotID, 'y'));
-                }
+            while (nextDirection != "end") // save set on instructions into vector.
+            {
+                directionList.push_back(nextDirection);
                 cin >> nextDirection;
             }
-            while(!printQueue.empty()){
-                int a = printQueue.front();
-                printQueue.pop();
-                int b = printQueue.front();
-                printQueue.pop();
-                PrintRobotPlace(RobotID, a, b);
-            }
+            for (vector<string>::iterator it = directionList.begin();
+                 it != directionList.end(); it++)
+                if (dbRobotInMap(robotID))
+                {
+                    dbMove(robotID, *it); // Move robot per instructions and print only after "end" instruction received.
+                    PrintRobotPlace(robotID, dbGetRobotPos(robotID, 'x'),
+                                    dbGetRobotPos(robotID, 'y'));
+                }
         }
-        printMap();
-        cin >> CurrCommand;
+//        printMap();
+        cin >> currentCommand;
     }
 }
 
-void StartControl(){
-    Robot_Count = 0;
+void StartControl()
+{
+    robotCount = 0;
     cout << "Start entering commands:" << endl;
     CommandRoutine();
-    PrintTable(Robot_ID, Score, Bin_Status);
+    PrintTable(robotName, robotScore, robotBinStatus);
 }
